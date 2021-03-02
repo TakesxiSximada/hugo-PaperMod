@@ -1,10 +1,21 @@
 <div class="profile">
     {{- with .Site.Params.profileMode }}
     <div class="profile_inner">
+
         {{- if .imageUrl}}<img src="{{ .imageUrl}}" alt="{{ .imageTitle | default "profile image" }}" />{{- end}}
         <h1>{{- .title | default $.Site.Title -}}</h1>
         <span>{{- .subtitle -}}</span>
         {{- partial "social_icons.html" $.Site.Params.socialIcons -}}
+
+
+        <style>
+	.contribution-graph {
+	   display: block;
+	   width: 100%;
+	   border-radius: 0;
+	}
+        </style>
+	<img class="contribution-graph" src="https://grass-graph.moshimo.works/images/TakesxiSximada.png?background=none">
 
         {{- with .buttons }}
         <div class="buttons">
@@ -17,4 +28,5 @@
         {{- end }}
     </div>
     {{- end}}
+    {{- partial "profile_posts.html" . }}
 </div>

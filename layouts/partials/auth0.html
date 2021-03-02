@@ -1,0 +1,158 @@
+<div class="menu">
+  <script src="https://cdn.auth0.com/js/auth0-spa-js/1.2/auth0-spa-js.production.js"></script>
+  <script
+    src="https://cdnjs.cloudflare.com/ajax/libs/redux/4.0.5/redux.js"
+    integrity="sha512-hIeMcj07bbpdm6W49lxdLrW7D1eLJF54UP0dQ7Ts3mPqa/Zjc51zI7l1A+QlHhijEluigbBfwLM9YkkLmtkb0A=="
+    crossorigin="anonymous"
+  ></script>
+  <button id="signIn">Sign In</button>
+
+  <div>
+    <span
+      id="userName"
+      style="padding-left: 0.5rem; padding-right: 0.5rem"
+    ></span>
+    <a style="display: inline-block" onclick="switchUserMenuVisibility()">
+      <img
+        id="userIcon"
+        style="
+          display: inline;
+          width: 3rem;
+          border-radius: 50%;
+          vertical-align: middle;
+        "
+      />
+    </a>
+    <ul id="userMenu" class="userMenu" style="visibility: hidden">
+      <li></li>
+      <li>Profile</li>
+      <li id="signOut">Sign Out</li>
+    </ul>
+  </div>
+  <style type="text/css">
+    #signIn {
+      border: solid 1px;
+      border-color: #bbbbbb;
+      border-radius: 3px;
+      width: 5rem;
+      height: 3rem;
+    }
+    .userMenu {
+      list-style: none;
+      border: solid 1px;
+      border-color: #bbbbbb;
+      border-radius: 3px;
+      text-align: left;
+      width: 11rem;
+      background-color: #efeded;
+    }
+    .userMenu > li:nth-of-type(n + 3) {
+      border-top: solid 1px #bbbbbb;
+    }
+  </style>
+
+  <script type="text/javascript">
+    // Generals
+    var auth0 = null;
+
+    // Components
+    const signInUI = document.querySelector("#signIn");
+    const signOutUI = document.querySelector("#signOut");
+    const userNameUI = document.querySelector("#userName");
+    const userIconUI = document.querySelector("#userIcon");
+    const userMenuUI = document.querySelector("#userMenu");
+
+    // Events
+    const CONFIGURE_AUTH0 = "CONFIGURE_AUTH0";
+    const CONFIGURED_AUTH0 = "CONFIGURED_AUTH0";
+    const REQUIRE_SIGNIN = "REQUIRE_SIGNIN";
+    const SIGNIN_AFTER = "SIGNIN_AFTER";
+    const REQUIRE_SIGNOUT = "REQUIRE_SIGNOUT";
+    const REFRESH_AUTHENTICATION_UI = "REFRESH_AUTHENTICATION_UI";
+
+    // Functions
+    function switchAuthenticationUI() {
+      auth0.isAuthenticated().then(function (isauth) {
+        signInUI.hidden = isauth;
+        signOutUI.hidden = !isauth;
+        if (isauth) {
+          document.dispatchEvent(new Event(SIGNIN_AFTER));
+        }
+      });
+    }
+
+    function switchUserMenuVisibility() {
+      if (userMenuUI.style.visibility === "visible") {
+        userMenuUI.style.visibility = "hidden";
+      } else {
+        userMenuUI.style.visibility = "visible";
+      }
+    }
+
+    // Binds
+    // userIconUI.addEventListener("click", switchUserMenuVisibility);
+    signInUI.onclick = () => document.dispatchEvent(new Event(REQUIRE_SIGNIN));
+    signOutUI.onclick = () =>
+      document.dispatchEvent(new Event(REQUIRE_SIGNOUT));
+
+    // event listeners
+    document.addEventListener(REQUIRE_SIGNIN, function () {
+      auth0.loginWithRedirect({
+        redirect_uri: window.location.origin,
+      });
+    });
+
+    document.addEventListener(CONFIGURE_AUTH0, function () {
+      fetch("/auth_config.json").then(function (resp) {
+        resp.json().then(function (auth_config) {
+          createAuth0Client(auth_config).then(function (auth0obj) {
+            auth0 = auth0obj;
+            document.dispatchEvent(new Event(CONFIGURED_AUTH0));
+          });
+        });
+      });
+    });
+
+    document.addEventListener(CONFIGURED_AUTH0, switchAuthenticationUI);
+    document.addEventListener(
+      REFRESH_AUTHENTICATION_UI,
+      switchAuthenticationUI
+    );
+
+    document.addEventListener(CONFIGURED_AUTH0, function () {
+      const queryString = window.location.search;
+      if (
+        queryString.length !== 0 &&
+        queryString.includes("code=") &&
+        queryString.includes("state=")
+      ) {
+        document.dispatchEvent(new Event("AUTH0_CALLBACKED"));
+      }
+    });
+
+    document.addEventListener(SIGNIN_AFTER, () => {
+      auth0.getUser().then((user) => {
+        userNameUI.textContent = user.name;
+        userIconUI.src = user.picture;
+        // userNameUI.textContent = user.user_metadata.nickname;
+        // userIconUI.src = user.user_metadata.picture;
+      });
+    });
+
+    document.addEventListener("AUTH0_CALLBACKED", function () {
+      auth0.handleRedirectCallback().then((resp) => {
+        // codeがそのままURLに残ってしまわないように履歴を置き換える。
+        window.history.replaceState({ url: "/" }, "", "/");
+        document.dispatchEvent(new Event(REFRESH_AUTHENTICATION_UI));
+        document.dispatchEvent(new Event(SIGNIN_AFTER));
+      });
+    });
+
+    document.addEventListener("REQUIRE_SIGNOUT", () => {
+      auth0.logout({ returnTo: window.location.origin });
+    });
+
+    // Entrypoint
+    document.dispatchEvent(new Event(CONFIGURE_AUTH0));
+  </script>
+</div>

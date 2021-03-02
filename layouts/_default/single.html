@@ -7,13 +7,26 @@
       {{- if .Draft }}<div class="entry-isdraft"><sup>&nbsp;&nbsp;[draft]</sup></div>{{- end }}
     </h1>
     {{- if .Params.hideMeta }}{{ else }}
+
     <div class="post-meta">
+      <img src="{{- .Site.Params.profileMode.imageUrl }}"
+           style="width: 1.6rem; height: 1.6rem; border-radius: 100%; margin: 0 0.3rem" />
+
+      {{- if or .Params.author .Site.Params.author }}
+        {{- .Params.author | default .Site.Params.author }}
+        &nbsp;·&nbsp;
+      {{ end }}
+
       <time>{{ .Date.Format "January 2, 2006" }}</time>
+
       {{- if $.Site.Params.ShowReadingTime -}}&nbsp;·&nbsp;
       {{- $default_txt := print .ReadingTime " " "min" }}
-      {{- i18n "read_time" .ReadingTime | default  $default_txt  }}{{ end }}
-      {{- if or .Params.author .Site.Params.author }}&nbsp;·&nbsp;{{- .Params.author | default .Site.Params.author }}{{ end }}
+        {{- i18n "read_time" .ReadingTime | default  $default_txt  }}
+	Read
+      {{ end }}
+
       {{- if .IsTranslated -}}&nbsp;|&nbsp;
+    <div class="post-meta">
       <ul class="i18n_list">
         {{- i18n "translations" | default "Translations"}}:
         {{- range .Translations }}

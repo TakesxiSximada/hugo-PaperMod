@@ -58,3 +58,10 @@ body:not(.dark) #sun {
     font-weight: 500;
     border-bottom: 2px solid currentColor;
 }
+
+.signIn, .signOut {
+    color: var(--primary);
+    border: solid 1px var(--primary);
+    padding: 5px 10px;
+    border-radius: 10px;
+}

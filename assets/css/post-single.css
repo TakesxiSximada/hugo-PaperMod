@@ -141,9 +141,12 @@
 
 .post-content .highlight,
 .post-content pre {
-    margin: auto calc(var(--gap) * -1) 32px calc(var(--gap) * -1);
+    padding: 1rem;
+    margin: auto calc(var(--gap) * -1) 0 calc(var(--gap) * -1);
     background: var(--hljs-bg) !important;
     border-radius: var(--radius);
+    white-space: pre-wrap ;
+    color: white;
 }
 
 .post-content li>.highlight {
@@ -315,4 +318,8 @@
         margin: 0 calc(var(--gap) * -1);
         padding: 0 21px;
     }
+}
+
+figcaption {
+    margin-bottom: 32px;
 }

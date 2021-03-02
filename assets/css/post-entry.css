@@ -37,6 +37,7 @@
 }
 
 .post-entry {
+    text-align: left;
     position: relative;
     margin-bottom: var(--gap);
     padding: var(--gap);

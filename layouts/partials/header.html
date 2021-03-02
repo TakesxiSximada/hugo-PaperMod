@@ -30,7 +30,34 @@
 <header class="header">
     <nav class="nav">
         <p class="logo">
-            <a href="{{ "" | absLangURL }}">{{ .Site.Title }}</a>
+            <a href="{{ "" | absLangURL }}" class="logoFor">
+              <img class="logoForLight" src="/img/symdon.png" />
+              <img class="logoForDark" src="/img/symdon.white.png" />
+	      <style type="text/css">
+                .logoFor > img {
+                  border-radius: 0;
+                  height: 110px;
+		}
+
+		.logoFor > :not(.enableLogo) {
+                  display: none;
+                }
+              </style>
+              <script>
+                const logoForLightUI = document.querySelector(".logoForLight");
+                const logoForDarkUI = document.querySelector(".logoForDark");
+
+                window.addEventListener("CHANGE_THEME_DARK", function (ev) {
+   		    logoForDarkUI.classList.add("enableLogo");
+   		    logoForLightUI.classList.remove("enableLogo");
+                });
+                window.addEventListener("CHANGE_THEME_LIGHT", function (ev) {
+   		    logoForDarkUI.classList.remove("enableLogo");
+   		    logoForLightUI.classList.add("enableLogo");
+                });
+                window.dispatchEvent(new Event("CHANGE_THEME_LIGHT"));
+	      </script>
+	    </a>
             {{- if (and (not .Site.Params.disableThemeToggle) (not (or (eq .Site.Params.defaultTheme "light") (eq .Site.Params.defaultTheme "dark")))) }}
             <span class="theme-toggle">
                 <a id="theme-toggle">
@@ -39,6 +66,11 @@
                         stroke-linejoin="round">
                         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                     </svg>
+		    <script type="text/javascript">
+		      document.querySelector("#moon").addEventListener("click", () => {
+                        window.dispatchEvent(new Event("CHANGE_THEME_DARK"));
+		      });
+		    </script>
                     <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                         fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                         stroke-linejoin="round">
@@ -52,11 +84,17 @@
                         <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
                         <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                     </svg>
+		    <script type="text/javascript">
+		      document.querySelector("#sun").addEventListener("click", () => {
+                        window.dispatchEvent(new Event("CHANGE_THEME_LIGHT"));
+		      });
+		    </script>
                 </a>
             </span>
             {{- end}}
         </p>
         {{- $currentPage := . }}
+
         <ul class="menu" id="menu" onscroll="menu_on_scroll()">
             {{- range .Site.Menus.main }}
             {{- $menu_item_url := .URL | relLangURL }}
@@ -70,6 +108,9 @@
                 </a>
             </li>
             {{- end }}
+
         </ul>
+       {{- partial "auth0.html" . }}
     </nav>
+
 </header>
