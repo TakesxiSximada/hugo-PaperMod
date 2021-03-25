@@ -1,5 +1,7 @@
 {{ define "head_ext" }}
-<meta name="robots" content="noindex">
+  {{- if not .IsHome }}
+    <meta name="robots" content="noindex">
+  {{- end}}
 {{ end }}
 
 {{- define "main" }}
