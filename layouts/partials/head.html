@@ -2,14 +2,16 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <!-- Title -->
-<title>{{ if .IsHome }}{{else}}{{ if .Title }}{{ .Title }} - {{ end }}{{end}}{{ .Site.Title }}</title>
+<title>{{ if .Title }}{{ .Title }}{{ else }}{{ .Site.Title }}{{ end }}</title>
 <!-- Meta -->
 {{- if in site.Params.mainSections .Type }}
 <meta name="description" content="{{ .Summary }}">
-<meta name="keywords" content={{ delimit .Keywords ", " }} />
+  {{- if .Params.tags }}
+  <meta name="keywords" content="{{ delimit .Params.tags "," }}" />
+  {{- end }}
 {{- else }}
 <meta name="description"
-    content="{{if .IsHome}}{{ .Site.Params.description }}{{else}}{{ .Title }} - {{ .Site.Title }}{{end}}">
+      content="{{if .IsHome}}{{ .Site.Params.description }}{{else}}{{ .Title }}{{ end }}">
 {{- end }}
 <meta name="author" content="{{ .Params.author | default .Site.Params.author }}">
 <link rel="canonical" href="{{ .Permalink }}" />
