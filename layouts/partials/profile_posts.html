@@ -32,7 +32,7 @@
       </div>
     </header>
 
-    <section style="padding-left: 2.5rem;">
+
       {{- if .Title }}
         <h1 style="padding: 1rem;">{{ .Title }}</h1>
 	<p>
@@ -64,7 +64,7 @@
       <ul class="post-tags">
         {{- range .Params.tags }}
         {{- $href := print (absLangURL "tags/") (urlize .) }}
-        <li><a href="{{ $href }}">{{ . }}</a></li>
+        <li><a href="{{ $href }}/">{{ . }}</a></li>
         {{- end }}
       </ul>
       {{- end }}
